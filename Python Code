@@ -1,0 +1,76 @@
+#Statistical Analysis of CSV Data Using Python Functions
+
+import csv
+import math
+
+def read_csv(file_path):
+    data = []
+    with open(file_path, 'r') as csvfile:
+         csvreader = csv.reader(csvfile)
+         for row in csvreader:
+             data.append(row)
+    return data
+
+
+def mean(column):
+    total = sum(column)
+    average = total / len(column)
+    return average
+
+
+def cal_median(column):
+    sorted_column = sorted(column)
+    length = len(sorted_column)
+    if length % 2 == 0:
+        middle_indices = [length // 2 - 1, length // 2]
+        median = (sorted_column[middle_indices[0]] +
+sorted_column[middle_indices[1]]) / 2
+    else:
+       median = sorted_column[length // 2]
+    return median
+
+
+def cal_mode(column):
+    freq = {}
+    for value in column:
+      if value in freq:
+          freq[value] += 1
+      else:
+        freq[value] = 1
+    mode = max(freq, key=freq.get)
+    return mode
+
+
+def cal_variance(column, mean):
+    squared_diff = [(x - mean) ** 2 for x in column]
+    variance = sum(squared_diff) / len(column)
+    return variance
+
+
+def cal_standard_deviation(variance):
+    return math.sqrt(variance)
+
+csv_file_path = '/content/price_data (1).csv'
+data = read_csv(csv_file_path)
+
+header = data[0]
+data = data[1:]
+
+# Convert the relevant columns (starting from index 2) to floats
+data = [[float(value) if i >= 2 else value for i, value in enumerate(row)]
+for row in data]
+
+for column_index in range(2, len(header)):
+    target_column = [row[column_index] for row in data]
+    col_mean = mean(target_column)
+    col_median = cal_median(target_column)
+    col_mode = cal_mode(target_column)
+    col_variance = cal_variance(target_column, col_mean)
+    col_std_deviation = cal_standard_deviation(col_variance)
+    
+    print(f"Statistics for column '{header[column_index]}':")
+    print("Mean:", col_mean)
+    print("Median:", col_median)
+    print("Mode:", col_mode)
+    print("Variance:", col_variance)
+    print("Standard Deviation:", col_std_deviation)
